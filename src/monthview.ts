@@ -201,12 +201,9 @@ export class MonthViewComponent implements ICalendarComponent, OnInit, OnDestroy
     ngAfterViewInit() {
         this.slider = new Swiper(this.swiperElement?.nativeElement, this.sliderOptions);
         let me = this;
-        this.slider.on('slideNextTransitionEnd', function() {
-            me.onSlideChanged(1);
-        });
 
-        this.slider.on('slidePrevTransitionEnd', function() {
-            me.onSlideChanged(-1);
+        this.slider.on('transitionEnd', function(event) {
+            me.onSlideChanged(event.realIndex);
         });
 
         if(this.dir == 'rtl') {
@@ -221,8 +218,12 @@ export class MonthViewComponent implements ICalendarComponent, OnInit, OnDestroy
         this.slider = swiper;
     }
 
-    onSlideChanged(direction: number) {
-        this.currentViewIndex = (this.currentViewIndex + direction + 3) % 3;
+    onSlideChanged(newViewIndex: number) {
+        if (newViewIndex === this.currentViewIndex) {
+            return;
+        }
+        const direction = (newViewIndex === (this.currentViewIndex + 1) % 3) ? 1 : -1;
+        this.currentViewIndex = newViewIndex;
         this.move(direction);
     }
 
