@@ -11,7 +11,8 @@ import {
     AfterViewInit,
     NgZone,
     ViewChild,
-    ElementRef
+    ElementRef,
+    ChangeDetectorRef
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 import {DatePipe} from '@angular/common';
@@ -28,7 +29,7 @@ import {CalendarService} from './calendar.service';
 })
 export class MonthViewComponent implements ICalendarComponent, OnInit, OnDestroy, OnChanges, AfterViewInit {
 
-    constructor(private calendarService: CalendarService, private zone:NgZone) {
+    constructor(private calendarService: CalendarService, private ref: ChangeDetectorRef) {
     }  
 
     private slider!: Swiper;
@@ -449,6 +450,7 @@ export class MonthViewComponent implements ICalendarComponent, OnInit, OnDestroy
         this.calendarService.populateAdjacentViews(this);
         this.updateCurrentView(this.range.startTime, this.views[this.currentViewIndex]);
         this.calendarService.rangeChanged(this);
+        this.ref.detectChanges();
     }
 
     getTitle(): string {
@@ -516,6 +518,7 @@ export class MonthViewComponent implements ICalendarComponent, OnInit, OnDestroy
         }
 
         this.onTimeSelected.emit({selectedTime: selectedDate, events, disabled: viewDate.disabled});
+        this.ref.detectChanges();
     }
 
     slideView(direction: number) {
